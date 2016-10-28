@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace MachineLearner.Algorithms
+﻿namespace MachineLearner.Algorithms
 {
     public class LearningManager
     {
@@ -19,6 +14,11 @@ namespace MachineLearner.Algorithms
             Ypred = Y;
 
             return Ypred;
+        }
+
+        private float CalculateDistance(float x, float y)
+        {
+            return 0;
         }
     }
 }
