@@ -164,8 +164,9 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Data Manipulation\MatlabImporter.cs" />
-    <Compile Include="DataAccess.cs" />
     <Compile Include="Data Manipulation\ExcelImporter.cs" />
+    <Compile Include="DB\DB_Access.cs" />
+    <Compile Include="DB\DB_Connection.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
