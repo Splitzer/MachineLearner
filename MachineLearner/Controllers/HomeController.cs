@@ -6,6 +6,9 @@ namespace MachineLearner.Controllers
     {
         public ActionResult Index()
         {
+            ExcelImporter importer = new ExcelImporter();
+            importer.ImportDataFromExcel("");
+
             return View();
         }
 

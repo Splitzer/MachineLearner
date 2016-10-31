@@ -6,7 +6,7 @@ namespace MachineLearner.DB
     class DB_Connection
     {
         public static SqlConnection NewCon;
-        public static string ConStr = ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString;
+        public static string ConStr = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
         public static SqlConnection GetConnection()
         {
