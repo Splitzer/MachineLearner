@@ -19,7 +19,7 @@ namespace MachineLearner
 
         public void ImportDataFromExcel(string excelFilePath)
         {
-            dbAccess.FillTable(excelFilePath);
+            dbAccess.FillTable(excelFilePath, "Zoo");
         }
     }
 }
