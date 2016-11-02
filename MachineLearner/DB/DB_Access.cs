@@ -66,7 +66,7 @@ namespace MachineLearner.DB
             //connection.Close();
 
             //series of commands to bulk copy data from the excel file into our sql table 
-            string myexceldataquery = "select student,rollno,course from [Sheet1$]";
+            string myexceldataquery = "select * from [Sheet1$]";
             OleDbConnection oledbconn = new OleDbConnection(@"provider=microsoft.jet.oledb.4.0;data source=" + excelFilePath + ";extended properties=" + "\"excel 8.0;hdr=yes;\"");
             OleDbCommand oledbcmd = new OleDbCommand(myexceldataquery, oledbconn);
             oledbconn.Open();

@@ -7,7 +7,7 @@ namespace MachineLearner.Controllers
         public ActionResult Index()
         {
             ExcelImporter importer = new ExcelImporter();
-            importer.ImportDataFromExcel("");
+            importer.ImportDataFromExcel("C:\\Users\\Splitzer\\Desktop\\Tei\\PTYXIAKI\\Datasets\\Zoo Data.xlsx");
 
             return View();
         }
