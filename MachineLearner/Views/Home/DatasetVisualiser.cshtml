@@ -1,0 +1,107 @@
+﻿@*@using PortalMVC.Helpers
+@model PortalMVC.Model.GridStateHeaderSet*@
+
+@{
+    ViewBag.Title = "DatasetVisualiser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>DatasetVisualiser</h2>
+
+<style>
+    html * {
+        outline: 0 !important;
+    }
+
+    .dialog-header-confirm {
+        background-color: green;
+    }
+</style>
+@section scripts
+{
+    <script src="~/js/Controllers/Users/indexUserController.js"></script>
+}
+<div data-ng-controller="indexUserController" data-ng-init="Model" ng-init='init(@Model.ToJson())' data-ng-cloak="">
+    <div>
+        <h3 class="portalHeader">Users</h3>
+        <button type="button" class="btn btn-success btn-small" onclick="@("window.location.href='" + @Url.Action("AddUser", "Users") + "'");">Add New <span class="glyphicon glyphicon-plus"></span></button>
+        <button type="button" class="btn btn-primary btn-small" data-ng-click="selectAllRows()">Select All <span class="glyphicon glyphicon-th-list"></span></button>
+        <button type="button" class="btn btn-primary btn-small" data-ng-click="showNotImplemented()">Edit Selected <span class="glyphicon glyphicon-pencil"></span></button>
+        <button type="button" class="btn btn-danger btn-small" data-ng-click="deleteUsers()">Delete Selected <span class="glyphicon glyphicon-remove"></span></button>
+        <button type="button" class="btn btn-primary btn-small" data-ng-click="showNotImplemented()">View Delete History <span class="glyphicon glyphicon-list-alt"></span></button>
+        <button type="button" class="btn btn-primary btn-small" data-ng-click="showNotImplemented()">Location Assignments <span class="glyphicon glyphicon-tags"></span></button>
+        <button type="button" class="btn btn-success btn-small" ng-csv="getCsvData()" csv-header="csvHeaders" filename="{{csvFileName}}">Export CSV <span class=" glyphicon glyphicon-folder-open"></span></button>
+    </div>
+    <br />
+    <div style="overflow: auto; overflow-y: hidden;">
+        <div class="angular-grid-container" ng-style="{'width' : tableWidth}">
+            <table id="usersTable" class="table table-curved table-condensed table-bordered" savecolumnswidth control="updateTableColumnsWidth" headers="headers">
+                <thead>
+                    <tr style="text-align: center;">
+                        <th style="vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}">
+                            <i ns-popover ns-popover-template="{{popoverTemplateGrid}}" ns-popover-timeout="0.1" ns-popover-trigger="click"
+                               data-toggle="tooltip" data-placement="top" title="Save/Restore Grid Settings Export to CSV"
+                               ns-popover-placement="bottom|left" style="padding-left: 2px; cursor: pointer; text-align: center; vertical-align: middle; color: #ffffff;" class="fa fa-wrench">
+                            </i>
+                        </th>
+                        <th ng-repeat="header in headers" ng-style="{'width': header.width}" style="cursor: pointer" data-ng-if="header.visible" id="{{header.value}}">
+                            <sort-by onsort="onSort" sortdir="filterCriteria.sortDir" sortedby="filterCriteria.sortedBy" sortable="{{ header.sortable != null ? header.sortable : true }}" sortvalue="{{ header.value }}">{{ header.title }}</sort-by>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="vertical-align: middle; text-align: center; font-weight: bold;" ng-style="{'width' : tableFirstColumnWidth}">
+                            <i ns-popover ns-popover-template="{{popoverTemplate}}" ns-popover-timeout="0.1" ns-popover-trigger="click"
+                               data-toggle="tooltip" data-placement="top" title="Hide or Show Grid Columns Change Column position"
+                               ns-popover-placement="bottom|left" style="cursor: pointer; padding-left: 3px; text-align: center; vertical-align: middle;"
+                               class="success fa fa-th">
+                            </i>
+                        </td>
+                        <td ng-repeat="header in headers" ng-style="{'width': header.width}" data-ng-if="header.visible">
+                            <input ng-if="header.type != 'bool' && header.sortable == null" class="form-control" data-ng-change="filterResult()" data-ng-model="filterCriteria.fieldFilters[header.value]" type="text" style="width: 100%" />
+                            <select ng-if="header.type == 'bool' && header.sortable == null" class="form-control" ng-change="filterResult()" ng-model="filterCriteria.fieldFilters[header.value]"
+                                    ng-options="filter.id as filter.name for filter in BooleanFilters">
+                                <option style="text-align: center;" value=" "> </option>
+                            </select>
+                            @*<checkbox ng-if="header.type =='bool' && header.sortable == 'false'" type="checkbox" ng-model="isAll" ng-change="selectAllRows()" />*@
+                        </td>
+                    </tr>
+                    <tr ng-repeat="user in users" ng-class-odd="'odd'" ng-class-even="'even'" ng-class="{selectedRow : tableSelection[user.userNumber]}" onmousedown="RowClick(this, false, event);">
+                        <td style=" vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}"></td>
+                        <td ng-repeat="header in headers" ng-style="{'width': header.width, 'text-align' : header.alignment}" data-ng-if="header.visible">
+                            <a href data-ng-if="header.anchor" data-ng-click="edit(customerGroup[header.value])">
+                                {{user[header.value]}}
+                            </a>
+                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type != 'datetime'">{{user[header.value]}}</span>
+                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type == 'datetime'">{{user[header.value]  | date:'dd/MM/yyyy HH:mm:ss'}}</span>
+                            <checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title != 'Select'" data-ng-model="user[header.value]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>
+                            @*<checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title == 'Select'" data-ng-model="tableSelection[user.userNumber]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>*@
+                            <button class="btn btn-primary btn-small" ng-click="showNotImplemented()" data-ng-if="!header.anchor && header.type == 'button' && header.type != 'datetime'">Copy</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-sm-6" style="margin-top: -20px;">
+                <ul class="pagination">
+                    <li style="white-space: nowrap;">
+                        <span>
+                            Records per Page:
+                            <select ng-options="selectedRecorsPerPage.name for selectedRecorsPerPage in
+                                                recordsPerPage" ng-model="selectedRecorsPerPage"
+                                    ng-change="pageSizeChanged(selectedRecorsPerPage.id)"></select>
+                            Total Records: {{totalItems}}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group col-sm-6" style="margin-top: -20px;">
+                <pagination ng-change="selectPage()" total-items="totalItems"
+                            ng-model="filterCriteria.pageNumber"
+                            items-per-page="filterCriteria.pageSize"
+                            class="pagination-md" boundary-links="true">
+                </pagination>
+            </div>
+        </div>
+    </div>
+</div>

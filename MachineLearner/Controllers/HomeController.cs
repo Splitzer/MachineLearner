@@ -7,14 +7,14 @@ namespace MachineLearner.Controllers
         public ActionResult Index()
         {
             ExcelImporter importer = new ExcelImporter();
-            importer.ImportDataFromExcel("C:\\Users\\Splitzer\\Desktop\\Tei\\PTYXIAKI\\Datasets\\Zoo Data.xlsx");
+            //importer.ImportDataFromExcel("C:\\Users\\Splitzer\\Desktop\\Tei\\PTYXIAKI\\Datasets\\Zoo Data.xlsx");
 
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult DatasetVisualiser()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Dataset Visualiser";
 
             return View();
         }
