@@ -163,7 +163,7 @@
             //end
         }
 
-//       for distfactor=index
+        //       for distfactor=index
 //           iter=iter+1
 //           for F=Findex
 //               [W,Zval,L(iter,F)] = RBFcompute(Xtrain,Xval,Ytrainconv,distfactor,func_names,func_inputs,F);

@@ -1,11 +1,7 @@
 ﻿using MachineLearner.DB;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
+using System.Globalization;
 
 namespace MachineLearner
 {
@@ -18,50 +14,48 @@ namespace MachineLearner
             dbAccess = new DB_Access();
         }
 
-        public DataTable ExcelToDatatable()
-        {
-            string sSheetName = null;
-            string sConnection = null;
-            DataTable dtTablesList = default(DataTable);
-            OleDbCommand oleExcelCommand = default(OleDbCommand);
-            OleDbDataReader oleExcelReader = default(OleDbDataReader);
-            OleDbConnection oleExcelConnection = default(OleDbConnection);
-
-            sConnection = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Test.xls;Extended Properties=\"Excel 12.0;HDR=No;IMEX=1\"";
-
-            oleExcelConnection = new OleDbConnection(sConnection);
-            oleExcelConnection.Open();
-
-            dtTablesList = oleExcelConnection.GetSchema("Tables");
-
-            if (dtTablesList.Rows.Count > 0)
-            {
-                sSheetName = dtTablesList.Rows[0]["TABLE_NAME"].ToString();
-            }
-
-            dtTablesList.Clear();
-            dtTablesList.Dispose();
-
-
-            if (!string.IsNullOrEmpty(sSheetName))
-            {
-                oleExcelCommand = oleExcelConnection.CreateCommand();
-                oleExcelCommand.CommandText = "Select * From [" + sSheetName + "]";
-                oleExcelCommand.CommandType = CommandType.Text;
-                oleExcelReader = oleExcelCommand.ExecuteReader();
-
-                while (oleExcelReader.Read())
-                {
-                }
-                oleExcelReader.Close();
-            }
-            oleExcelConnection.Close();
-        }
-
         public void ImportDataFromExcel(string excelFilePath)
         {
-            dbAccess.CreateDatasetTable(new DataTable());
-            dbAccess.FillTable(excelFilePath, "Zoo");
+            DataTable table = ConvertExcelToDataTable(excelFilePath);
+            dbAccess.CreateDatasetTable(table);
+            dbAccess.FillTable(table);
+        }
+
+        private DataTable ConvertExcelToDataTable(string filePath, bool hasHeaders = false)
+        {
+            DataTable dtexcel = new DataTable();
+            string HDR = hasHeaders ? "Yes" : "No";
+            string strConn;
+
+            if (filePath.Substring(filePath.LastIndexOf('.')).ToLower() == ".xlsx")
+            {
+                strConn = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath + ";Extended Properties=\"Excel 12.0;HDR=" + HDR + ";IMEX=0\"";
+            }
+            else
+            {
+                strConn = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filePath + ";Extended Properties=\"Excel 8.0;HDR=" + HDR + ";IMEX=0\"";
+            }
+
+            OleDbConnection connection = new OleDbConnection(strConn);
+            connection.Open();
+            DataTable schemaTable = connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "TABLE" });
+            //Looping Total Sheet of Xl File
+            /*foreach (DataRow schemaRow in schemaTable.Rows)
+            {
+            }*/
+            //Looping a first Sheet of Xl File
+            DataRow schemaRow = schemaTable.Rows[0];
+            string sheet = schemaRow["TABLE_NAME"].ToString();
+            if (!sheet.EndsWith("_"))
+            {
+                string excelQuery = "SELECT  * FROM [Sheet1$]";
+                OleDbDataAdapter excelDa = new OleDbDataAdapter(excelQuery, connection);
+                dtexcel.Locale = CultureInfo.CurrentCulture;
+                excelDa.Fill(dtexcel);
+            }
+
+            connection.Close();
+            return dtexcel;
         }
     }
 }

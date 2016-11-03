@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.OleDb;
 using System.Data.SqlClient;
 
 namespace MachineLearner.DB
@@ -14,7 +13,7 @@ namespace MachineLearner.DB
             connection = DB_Connection.GetConnection();
         }
 
-        public DataTable GetDataset(string tableName)
+        internal DataTable GetDataset(string tableName)
         {
             DataTable table = new DataTable(tableName);
 
@@ -32,7 +31,7 @@ namespace MachineLearner.DB
             return table;
         }
 
-        public void CreateDatasetTable(DataTable table)
+        internal void CreateDatasetTable(DataTable table, bool hasColumnNames = false)
         {
             if (connection.State.ToString() == "Closed") connection.Open();
 
@@ -51,36 +50,35 @@ namespace MachineLearner.DB
             connection.Close();
         }
 
-        internal void FillTable(string excelFilePath, string tableName)
+        internal void FillTable(DataTable table)
         {
             if (connection.State.ToString() == "Closed") connection.Open();
 
-            ////execute a query to erase any previous data from our destination table 
-            //SqlCommand cmd = new SqlCommand();
-            //cmd.Connection = connection;
-            //cmd.CommandType = CommandType.Text;
-            //cmd.CommandText = "DELETE FROM " + tableName;
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = connection;
+            cmd.CommandType = CommandType.Text;
 
-            //cmd.ExecuteNonQuery();
+            cmd.CommandText = "INSERT " + table.TableName + " VALUES ";
 
-            //connection.Close();
-
-            //series of commands to bulk copy data from the excel file into our sql table 
-            string myexceldataquery = "select * from [Sheet1$]";
-            OleDbConnection oledbconn = new OleDbConnection(@"provider=microsoft.jet.oledb.4.0;data source=" + excelFilePath + ";extended properties=" + "\"excel 8.0;hdr=yes;\"");
-            OleDbCommand oledbcmd = new OleDbCommand(myexceldataquery, oledbconn);
-            oledbconn.Open();
-            OleDbDataReader dr = oledbcmd.ExecuteReader();
-            SqlBulkCopy bulkcopy = new SqlBulkCopy(connection);
-            bulkcopy.DestinationTableName = tableName;
-
-            while (dr.Read())
+            foreach (DataRow row in table.Rows)
             {
-                bulkcopy.WriteToServer(dr);
+                cmd.CommandText += "(";
+                for (int i = 0; i < table.Columns.Count - 1; i++)
+                {
+                    cmd.CommandText += "'" + row[i] + "', ";
+                }
+                cmd.CommandText += "'" + row[table.Columns.Count] + "'), " + Environment.NewLine;
             }
 
-            dr.Close();
-            oledbconn.Close();
+            cmd.CommandText = cmd.CommandText.Remove(cmd.CommandText.Length - 1);
+            //INSERT sometable (a, b, c)
+            //VALUES  (13, 'New York', 334),
+            //        (14, 'London', 823),
+            //        (15, 'Paris', 1124),
+            //        (16, 'Munich', 2080))
+
+            cmd.ExecuteNonQuery();
+            connection.Close();
         }
     }
 }
