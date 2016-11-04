@@ -19,23 +19,18 @@
 </style>
 @section scripts
 {
-    <script src="~/js/Controllers/Users/indexUserController.js"></script>
+    <script src="~/Scripts/Angular Controllers/indexDatasetVisualiserController.js"></script>
 }
-<div data-ng-controller="indexUserController" data-ng-init="Model" ng-init='init(@Model.ToJson())' data-ng-cloak="">
+<div data-ng-controller="indexDatasetVisualiserController" data-ng-init="Model" ng-init='init(@Model.ToJson())' data-ng-cloak="">
     <div>
-        <h3 class="portalHeader">Users</h3>
-        <button type="button" class="btn btn-success btn-small" onclick="@("window.location.href='" + @Url.Action("AddUser", "Users") + "'");">Add New <span class="glyphicon glyphicon-plus"></span></button>
+        <h3 class="portalHeader">Dataset Visualiser</h3>
         <button type="button" class="btn btn-primary btn-small" data-ng-click="selectAllRows()">Select All <span class="glyphicon glyphicon-th-list"></span></button>
-        <button type="button" class="btn btn-primary btn-small" data-ng-click="showNotImplemented()">Edit Selected <span class="glyphicon glyphicon-pencil"></span></button>
-        <button type="button" class="btn btn-danger btn-small" data-ng-click="deleteUsers()">Delete Selected <span class="glyphicon glyphicon-remove"></span></button>
-        <button type="button" class="btn btn-primary btn-small" data-ng-click="showNotImplemented()">View Delete History <span class="glyphicon glyphicon-list-alt"></span></button>
-        <button type="button" class="btn btn-primary btn-small" data-ng-click="showNotImplemented()">Location Assignments <span class="glyphicon glyphicon-tags"></span></button>
         <button type="button" class="btn btn-success btn-small" ng-csv="getCsvData()" csv-header="csvHeaders" filename="{{csvFileName}}">Export CSV <span class=" glyphicon glyphicon-folder-open"></span></button>
     </div>
     <br />
     <div style="overflow: auto; overflow-y: hidden;">
         <div class="angular-grid-container" ng-style="{'width' : tableWidth}">
-            <table id="usersTable" class="table table-curved table-condensed table-bordered" savecolumnswidth control="updateTableColumnsWidth" headers="headers">
+            <table id="datasetTable" class="table table-curved table-condensed table-bordered" savecolumnswidth control="updateTableColumnsWidth" headers="headers">
                 <thead>
                     <tr style="text-align: center;">
                         <th style="vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}">
@@ -67,16 +62,16 @@
                             @*<checkbox ng-if="header.type =='bool' && header.sortable == 'false'" type="checkbox" ng-model="isAll" ng-change="selectAllRows()" />*@
                         </td>
                     </tr>
-                    <tr ng-repeat="user in users" ng-class-odd="'odd'" ng-class-even="'even'" ng-class="{selectedRow : tableSelection[user.userNumber]}" onmousedown="RowClick(this, false, event);">
+                    <tr ng-repeat="tuple in dataset" ng-class-odd="'odd'" ng-class-even="'even'" ng-class="{selectedRow : tableSelection[dataset.tupleKey]}" onmousedown="RowClick(this, false, event);">
                         <td style=" vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}"></td>
                         <td ng-repeat="header in headers" ng-style="{'width': header.width, 'text-align' : header.alignment}" data-ng-if="header.visible">
                             <a href data-ng-if="header.anchor" data-ng-click="edit(customerGroup[header.value])">
-                                {{user[header.value]}}
+                                {{tuple[header.value]}}
                             </a>
-                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type != 'datetime'">{{user[header.value]}}</span>
-                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type == 'datetime'">{{user[header.value]  | date:'dd/MM/yyyy HH:mm:ss'}}</span>
-                            <checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title != 'Select'" data-ng-model="user[header.value]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>
-                            @*<checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title == 'Select'" data-ng-model="tableSelection[user.userNumber]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>*@
+                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type != 'datetime'">{{tuple[header.value]}}</span>
+                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type == 'datetime'">{{tuple[header.value]  | date:'dd/MM/yyyy HH:mm:ss'}}</span>
+                            <checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title != 'Select'" data-ng-model="tuple[header.value]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>
+                            @*<checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title == 'Select'" data-ng-model="tableSelection[tuple.tupleKey]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>*@
                             <button class="btn btn-primary btn-small" ng-click="showNotImplemented()" data-ng-if="!header.anchor && header.type == 'button' && header.type != 'datetime'">Copy</button>
                         </td>
                     </tr>
