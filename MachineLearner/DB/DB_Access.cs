@@ -101,11 +101,6 @@ namespace MachineLearner.DB
             }
 
             cmd.CommandText = cmd.CommandText.Remove(cmd.CommandText.Length - 4);
-            //INSERT sometable (a, b, c)
-            //VALUES  (13, 'New York', 334),
-            //        (14, 'London', 823),
-            //        (15, 'Paris', 1124),
-            //        (16, 'Munich', 2080))
 
             cmd.ExecuteNonQuery();
             connection.Close();

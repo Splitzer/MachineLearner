@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.OleDb;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace MachineLearner
 {
@@ -22,11 +21,7 @@ namespace MachineLearner
             string fileName = (Path.GetFileNameWithoutExtension(excelFilePath)).Replace(" ", "");
             table.TableName = fileName;
 
-            if (dbAccess.TableExists(fileName))
-            {
-                dbAccess.FillTable(table);
-            }
-            else
+            if (!dbAccess.TableExists(fileName))
             {
                 dbAccess.CreateDatasetTable(table);
                 dbAccess.FillTable(table);
