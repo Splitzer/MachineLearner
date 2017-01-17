@@ -2,6 +2,8 @@
 using System.Data;
 using System.Data.OleDb;
 using System.Globalization;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MachineLearner
 {
@@ -17,8 +19,18 @@ namespace MachineLearner
         public void ImportDataFromExcel(string excelFilePath)
         {
             DataTable table = ConvertExcelToDataTable(excelFilePath);
-            dbAccess.CreateDatasetTable(table);
-            dbAccess.FillTable(table);
+            string fileName = (Path.GetFileNameWithoutExtension(excelFilePath)).Replace(" ", "");
+            table.TableName = fileName;
+
+            if (dbAccess.TableExists(fileName))
+            {
+                dbAccess.FillTable(table);
+            }
+            else
+            {
+                dbAccess.CreateDatasetTable(table);
+                dbAccess.FillTable(table);
+            }
         }
 
         private DataTable ConvertExcelToDataTable(string filePath, bool hasHeaders = false)

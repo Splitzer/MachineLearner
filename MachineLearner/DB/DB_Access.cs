@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -11,6 +12,26 @@ namespace MachineLearner.DB
         public DB_Access()
         {
             connection = DB_Connection.GetConnection();
+        }
+
+        internal bool TableExists(string tableName)
+        {
+            List<string> tableList = new List<string>();
+
+            if (connection.State.ToString() == "Closed") connection.Open();
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = connection;
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = @"SELECT * 
+                                FROM INFORMATION_SCHEMA.TABLES
+                                WHERE TABLE_NAME = '" + tableName + "'";
+
+            string value = (string)cmd.ExecuteScalar();
+
+            connection.Close();
+
+            return !string.IsNullOrEmpty(value);
         }
 
         internal DataTable GetDataset(string tableName)
@@ -42,7 +63,16 @@ namespace MachineLearner.DB
             cmd.CommandText = "CREATE TABLE " + table.TableName + Environment.NewLine + "(" + Environment.NewLine;
             for (int i = 0; i < table.Columns.Count; i++)
             {
-                cmd.CommandText += "Column" + i + " varchar(255), " + Environment.NewLine; 
+                cmd.CommandText += "Column" + i;
+                if (i != table.Columns.Count - 1)
+                {
+                    cmd.CommandText += " varchar(255), ";
+                }
+                else
+                {
+                    cmd.CommandText += " varchar(255) ";
+                }
+                cmd.CommandText += Environment.NewLine;
             }
             cmd.CommandText += ")";
 
@@ -67,10 +97,10 @@ namespace MachineLearner.DB
                 {
                     cmd.CommandText += "'" + row[i] + "', ";
                 }
-                cmd.CommandText += "'" + row[table.Columns.Count] + "'), " + Environment.NewLine;
+                cmd.CommandText += "'" + row[table.Columns.Count - 1] + "'), " + Environment.NewLine;
             }
 
-            cmd.CommandText = cmd.CommandText.Remove(cmd.CommandText.Length - 1);
+            cmd.CommandText = cmd.CommandText.Remove(cmd.CommandText.Length - 4);
             //INSERT sometable (a, b, c)
             //VALUES  (13, 'New York', 334),
             //        (14, 'London', 823),
