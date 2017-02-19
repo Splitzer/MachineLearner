@@ -15,27 +15,30 @@
 
         private static void InitialiseDataset()
         {
-            //N=size(X,1);
-            //d=size(X,2);
-            //megtimi=max(max(X));
+            //int N = size(X,1);
+            //int d = size(X,2);
+            //int megtimi = max(max(X));
+            float[][] f;
 
-            //for i=1:megtimi
-            //    for k=1:d
-            //        f(i,k)=sum(X(:,k) == i);
-            //    end
-            //end
+            //for (int i = 0; i < megtimi; i++)
+            //{
+                //    for k=1:d
+                //        f(i,k)=sum(X(:,k) == i);
+                //    end
+            //}
 
-            //for k=1:d
-            //    n(k)=size(find(f(:,k)~=0),1);
-            //end
+            //for (int i = 0; i < d; i++)
+            //{
+                //    n(k)=size(find(f(:,k)~=0),1);
+            //}
 
-            //p=f./N;
-            //p2=(f.*(f-1))./(N*(N-1));
+            //float p = f / N;
+            //float p2 = (f.*(f-1))./(N*(N-1));
 
-            //range=0;
-            //Xmin=0;
-            //func_inputs={n f p p2 N range Xmin};
-            //[range,Xmin] = DistNorm(X,func_names,func_inputs); %
+            int range=0;
+            int Xmin=0;
+            //func_inputs={n f  pp2 N range Xmin};
+            //[range,Xmin] = Normalise(X,func_names,func_inputs); %
             //func_inputs={n f p p2 N range Xmin};
         }
 

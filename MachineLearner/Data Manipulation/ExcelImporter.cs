@@ -46,11 +46,7 @@ namespace MachineLearner
             OleDbConnection connection = new OleDbConnection(strConn);
             connection.Open();
             DataTable schemaTable = connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "TABLE" });
-            //Looping Total Sheet of Xl File
-            /*foreach (DataRow schemaRow in schemaTable.Rows)
-            {
-            }*/
-            //Looping a first Sheet of Xl File
+
             DataRow schemaRow = schemaTable.Rows[0];
             string sheet = schemaRow["TABLE_NAME"].ToString();
             if (!sheet.EndsWith("_"))
