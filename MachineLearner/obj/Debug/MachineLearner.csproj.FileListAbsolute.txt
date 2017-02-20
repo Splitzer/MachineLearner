@@ -110,3 +110,8 @@ C:\_Dev\MachineLearner\MachineLearner\obj\Debug\MachineLearner.pdb
 C:\_Dev\MachineLearner\MachineLearner\obj\Debug\MachineLearner.csprojResolveAssemblyReference.cache
 C:\_Dev\MachineLearner\MachineLearner\bin\Ninject.dll
 C:\_Dev\MachineLearner\MachineLearner\bin\Ninject.xml
+C:\_Dev\MachineLearner\MachineLearner\bin\Ninject.Web.Common.dll
+C:\_Dev\MachineLearner\MachineLearner\bin\Ninject.Web.Mvc.dll
+C:\_Dev\MachineLearner\MachineLearner\bin\WebActivatorEx.dll
+C:\_Dev\MachineLearner\MachineLearner\bin\Ninject.Web.Common.xml
+C:\_Dev\MachineLearner\MachineLearner\bin\Ninject.Web.Mvc.xml

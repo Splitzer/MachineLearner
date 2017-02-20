@@ -1,102 +1,130 @@
 ﻿@using MachineLearner.Helpers
-@*@model Model.GridStateHeaderSet*@
+@model MachineLearner.Models.DataModel
 
 @{
-    ViewBag.Title = "DatasetVisualiser";
+    ViewBag.Title = "Dataset Visualiser";
+    ViewBag.Name = "Dataset Visualiser";
     Layout = "~/Views/Shared/_LayoutAngular.cshtml";
 }
 
-<h2>DatasetVisualiser</h2>
-
-<style>
-    html * {
-        outline: 0 !important;
-    }
-
-    .dialog-header-confirm {
-        background-color: green;
-    }
-</style>
 @section scripts
 {
-    <script src="~/Scripts/Angular Controllers/indexDatasetVisualiserController.js"></script>
+    <script src="~/Scripts/Angular Controllers/datasetVisualiserIndexController.js"></script>
+    @*@Scripts.Render("~/bundles/mvc-machines-index")*@
 }
-<div data-ng-controller="indexDatasetVisualiserController" data-ng-init="Model" ng-init='init(@Model.ToJson())' data-ng-cloak="">
-    <div>
-        <h3 class="portalHeader">Dataset Visualiser</h3>
-        <button type="button" class="btn btn-primary btn-small" data-ng-click="selectAllRows()">Select All <span class="glyphicon glyphicon-th-list"></span></button>
-        <button type="button" class="btn btn-success btn-small" ng-csv="getCsvData()" csv-header="csvHeaders" filename="{{csvFileName}}">Export CSV <span class=" glyphicon glyphicon-folder-open"></span></button>
-    </div>
-    <br />
-    <div style="overflow: auto; overflow-y: hidden;">
-        <div class="angular-grid-container" ng-style="{'width' : tableWidth}">
-            <table id="datasetTable" class="table table-curved table-condensed table-bordered" savecolumnswidth control="updateTableColumnsWidth" headers="headers">
-                <thead>
-                    <tr style="text-align: center;">
-                        <th style="vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}">
-                            <i ns-popover ns-popover-template="{{popoverTemplateGrid}}" ns-popover-timeout="0.1" ns-popover-trigger="click"
-                               data-toggle="tooltip" data-placement="top" title="Save/Restore Grid Settings Export to CSV"
-                               ns-popover-placement="bottom|left" style="padding-left: 2px; cursor: pointer; text-align: center; vertical-align: middle; color: #ffffff;" class="fa fa-wrench">
-                            </i>
-                        </th>
-                        <th ng-repeat="header in headers" ng-style="{'width': header.width}" style="cursor: pointer" data-ng-if="header.visible" id="{{header.value}}">
-                            <sort-by onsort="onSort" sortdir="filterCriteria.sortDir" sortedby="filterCriteria.sortedBy" sortable="{{ header.sortable != null ? header.sortable : true }}" sortvalue="{{ header.value }}">{{ header.title }}</sort-by>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="vertical-align: middle; text-align: center; font-weight: bold;" ng-style="{'width' : tableFirstColumnWidth}">
-                            <i ns-popover ns-popover-template="{{popoverTemplate}}" ns-popover-timeout="0.1" ns-popover-trigger="click"
-                               data-toggle="tooltip" data-placement="top" title="Hide or Show Grid Columns Change Column position"
-                               ns-popover-placement="bottom|left" style="cursor: pointer; padding-left: 3px; text-align: center; vertical-align: middle;"
-                               class="success fa fa-th">
-                            </i>
-                        </td>
-                        <td ng-repeat="header in headers" ng-style="{'width': header.width}" data-ng-if="header.visible">
-                            <input ng-if="header.type != 'bool' && header.sortable == null" class="form-control" data-ng-change="filterResult()" data-ng-model="filterCriteria.fieldFilters[header.value]" type="text" style="width: 100%" />
-                            <select ng-if="header.type == 'bool' && header.sortable == null" class="form-control" ng-change="filterResult()" ng-model="filterCriteria.fieldFilters[header.value]"
-                                    ng-options="filter.id as filter.name for filter in BooleanFilters">
-                                <option style="text-align: center;" value=" "> </option>
-                            </select>
-                            @*<checkbox ng-if="header.type =='bool' && header.sortable == 'false'" type="checkbox" ng-model="isAll" ng-change="selectAllRows()" />*@
-                        </td>
-                    </tr>
-                    <tr ng-repeat="tuple in dataset" ng-class-odd="'odd'" ng-class-even="'even'" ng-class="{selectedRow : tableSelection[dataset.tupleKey]}" onmousedown="RowClick(this, false, event);">
-                        <td style=" vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}"></td>
-                        <td ng-repeat="header in headers" ng-style="{'width': header.width, 'text-align' : header.alignment}" data-ng-if="header.visible">
-                            <a href data-ng-if="header.anchor" data-ng-click="edit(customerGroup[header.value])">
-                                {{tuple[header.value]}}
-                            </a>
-                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type != 'datetime'">{{tuple[header.value]}}</span>
-                            <span data-ng-if="!header.anchor && header.type != 'bool' && header.type == 'datetime'">{{tuple[header.value]  | date:'dd/MM/yyyy HH:mm:ss'}}</span>
-                            <checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title != 'Select'" data-ng-model="tuple[header.value]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>
-                            @*<checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title == 'Select'" data-ng-model="tableSelection[tuple.tupleKey]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>*@
-                            <button class="btn btn-primary btn-small" ng-click="showNotImplemented()" data-ng-if="!header.anchor && header.type == 'button' && header.type != 'datetime'">Copy</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="col-sm-6" style="margin-top: -20px;">
-                <ul class="pagination">
-                    <li style="white-space: nowrap;">
-                        <span>
-                            Records per Page:
-                            <select ng-options="selectedRecorsPerPage.name for selectedRecorsPerPage in
-                                                recordsPerPage" ng-model="selectedRecorsPerPage"
-                                    ng-change="pageSizeChanged(selectedRecorsPerPage.id)"></select>
-                            Total Records: {{totalItems}}
-                        </span>
-                    </li>
-                </ul>
+<br />
+<div data-ng-controller="datasetVisualiserIndexController" ng-init='init(@Model.ToJson())' ng-cloak>
+    <div id="page-container">
+        <nav class="navbar navbar-default" role="navigation">
+            <div>
+                <div class="navbar-header portalHeader">
+                    <label id="lblIndexTitle" class="title-style-collapsed" onclick="javascript:history.go(0)">@ViewBag.Title</label>
+                    <input type="text" title="TypeToSearch" data-ng-change="filterResult()" data-ng-model="filterCriteria.searchTerm" class="navbar-toggle searchBoxCollapsed" placeholder=btnSearchText />
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#index-navbar-collapse">
+                        <span class="sr-only">ToggleNavigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse portalHeader" id="index-navbar-collapse">
+                    <div style="height:auto">
+                        <ul class="nav navbar-nav " id="mainnavbar">
+
+                            <li style="width:auto"><label id="lblIndexTitle" class="title-style" onclick="javascript:history.go(0)">@ViewBag.Title</label></li>
+
+                            <li><button id="btnAddMachine" type="button" class="btn btn-primary btn-sm" onclick="doNavigate('/machines/addmachine', 'Loading')">btnAddNewText</button></li>
+                            
+                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="selectAllRows()">Select All</button></li>
+                            
+                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="editMultipleMachines()">btnMultiEditText</button></li>
+
+                            <li><button type="button" class="btn btn-danger btn-sm" data-ng-click="deleteMachines()">btnMultiDeleteText</button></li>
+
+                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="">btnViewAuditText</button></li>
+
+                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="editMultipleVendingMachineAssignments()">btnLocationAssignmentsText</button></li>
+
+                            <li><button type="button" class="btn btn-primary btn-sm" ng-csv="getCsvData()" csv-header="csvHeaders" filename="{{csvFileName}}">btnExportToCsvText</button></li>&nbsp
+
+                            <li style="display:inline-block"><input type="text" title="TypeToSearch" data-ng-change="filterResult()" data-ng-model="filterCriteria.searchTerm" class="searchBox" placeholder=btnSearchText></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="btn-group col-sm-6" style="margin-top: -20px;">
-                <pagination ng-change="selectPage()" total-items="totalItems"
-                            ng-model="filterCriteria.pageNumber"
-                            items-per-page="filterCriteria.pageSize"
-                            class="pagination-md" boundary-links="true">
-                </pagination>
+        </nav>
+        <br />
+        <div style="overflow: auto; overflow-y: hidden;">
+            <div class="angular-grid-container" ng-style="{'width' : tableWidth}">
+                <table id="datasetTable" class="table table-curved table-condensed table-bordered" savecolumnswidth control="updateTableColumnsWidth" headers="headers">
+                    <thead>
+                        <tr style="text-align: center;">
+                            <th style="vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}" title="Save/Restore Grid Settings Export to CSV" data-toggle="tooltip" data-placement="top">
+                                <i ns-popover ns-popover-template="{{popoverTemplateGrid}}" ns-popover-timeout="0.1" ns-popover-trigger="click"
+                                   ns-popover-placement="bottom|left" style="padding-left: 2px; cursor: pointer; text-align: center; vertical-align: middle; color:yellow;" class="fa fa-wrench fa-lg">
+                                </i>
+                            </th>
+                            <th ng-repeat="header in headers" style="cursor:pointer" title="ClickToSort" ng-style="{'width': header.width}" data-ng-if="header.visible" id="{{header.value}}">
+                                <sort-by onsort="onSort" sortdir="filterCriteria.sortDir" sortedby="filterCriteria.sortedBy" sortable="{{ header.sortable != null ? header.sortable : true }}" sortvalue="{{ header.value }}">{{ header.title }}</sort-by>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="vertical-align: middle; text-align: center; font-weight: bold;" ng-style="{'width' : tableFirstColumnWidth}" title="ManageGridColumns" data-placement="top" data-toggle="tooltip">
+                                <i ns-popover ns-popover-template="{{popoverTemplate}}" ns-popover-trigger="click"
+                                   ns-popover-placement="bottom|left" style="cursor: pointer; padding-left: 3px; text-align: center; vertical-align: middle;"
+                                   class="fa fa-th fa-lg">
+                                </i>
+                            </td>
+                            <td ng-repeat="header in headers" ng-style="{'width': header.width}" data-ng-if="header.visible">
+                                <input title="TypeToFilter" ng-if="header.type != 'bool' && header.sortable == null" class="form-control" data-ng-change="filterResult()" data-ng-model="filterCriteria.fieldFilters[header.value]" type="text" style="width: 100%;" />
+                                <select title="SelectToFilter" ng-if="header.type == 'bool' && header.sortable == null" class="form-control" ng-change="filterResult()" ng-model="filterCriteria.fieldFilters[header.value]"
+                                        ng-options="filter.id as filter.name for filter in BooleanFilters">
+                                    <option style="text-align: center;"></option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="tuple in dataset" ng-class-odd="'odd'" ng-class-even="'even'" ng-class="{selectedRow : selectTrue(tuple.tupleKey)}" onclick="RowClick(this, false, event);" style="cursor:pointer">
+                            <td style="vertical-align: middle; text-align: center;" ng-style="{'width' : tableFirstColumnWidth}">
+                                <div style="overflow:hidden; white-space: nowrap;"></div>
+                            </td>
+                            <td ng-repeat="header in headers" ng-style="{'width': header.width, 'text-align' : header.alignment}" data-ng-if="header.visible">
+                                <label data-ng-if="header.anchor">
+                                    {{tuple[header.value]}}
+                                </label>
+                                <span data-ng-if="!header.anchor && header.type != 'bool'">{{tuple[header.value] | filtervalue:header.type}}</span>
+                                <checkbox data-ng-if="!header.anchor && header.type == 'bool' && header.type != 'datetime' && header.title != 'Select'" data-ng-model="tuple[header.value]" ng-disabled="!shouldBeDisabled(header.title)"></checkbox>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="col-sm-6" style="margin-top: -20px;">
+                    <ul class="pagination">
+                        <li style="white-space: nowrap;">
+                            <span>
+                                Records per Page:
+                                <select ng-options="selectedRecorsPerPage.name for selectedRecorsPerPage in
+                                                recordsPerPage" ng-model="selectedRecorsPerPage"
+                                        ng-change="pageSizeChanged(selectedRecorsPerPage.id)"></select>
+                                Total Records: {{totalItems}}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn-group col-sm-6" style="margin-top: -20px;">
+                    <pagination ng-change="selectPage()" total-items="totalItems"
+                                ng-model="filterCriteria.pageNumber"
+                                items-per-page="filterCriteria.pageSize"
+                                class="pagination-md" boundary-links="true">
+                    </pagination>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="~/Scripts/bootstrap/bootstrap-tooltip.js"></script>
+@*@{ Html.RenderPartial("_EditMultipleMachines.Modal"); }
+@{ Html.RenderPartial("_MachineDeleteHistory.Modal"); }
+@{ Html.RenderPartial("_VendingMachineAssignments.Modal");}*@

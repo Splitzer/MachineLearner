@@ -5,7 +5,7 @@
 <html data-ng-app="@ViewBag.InitModule">
 <head data-ng-cloak="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPS Portal - @ViewBag.Title</title>
+    <title>@ViewBag.Title</title>
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
@@ -44,11 +44,6 @@
         }
     </script>
     @{
-        if (Session["ConnString"] == null)
-        {
-            Response.Redirect("~/SessionExpired.aspx", true);
-            return;
-        }
         @Html.AntiForgeryToken()
         string distributorImage = "";
         string imgclass = "spsLogo";
