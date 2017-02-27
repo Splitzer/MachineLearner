@@ -4,7 +4,8 @@
 @{
     ViewBag.Title = "Dataset Visualiser";
     ViewBag.Name = "Dataset Visualiser";
-    Layout = "~/Views/Shared/_LayoutAngular.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = "~/Views/Shared/_LayoutAngular.cshtml";
 }
 
 @section scripts
@@ -33,18 +34,6 @@
                         <ul class="nav navbar-nav " id="mainnavbar">
 
                             <li style="width:auto"><label id="lblIndexTitle" class="title-style" onclick="javascript:history.go(0)">@ViewBag.Title</label></li>
-
-                            <li><button id="btnAddMachine" type="button" class="btn btn-primary btn-sm" onclick="doNavigate('/machines/addmachine', 'Loading')">btnAddNewText</button></li>
-                            
-                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="selectAllRows()">Select All</button></li>
-                            
-                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="editMultipleMachines()">btnMultiEditText</button></li>
-
-                            <li><button type="button" class="btn btn-danger btn-sm" data-ng-click="deleteMachines()">btnMultiDeleteText</button></li>
-
-                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="">btnViewAuditText</button></li>
-
-                            <li><button type="button" class="btn btn-primary btn-sm" data-ng-click="editMultipleVendingMachineAssignments()">btnLocationAssignmentsText</button></li>
 
                             <li><button type="button" class="btn btn-primary btn-sm" ng-csv="getCsvData()" csv-header="csvHeaders" filename="{{csvFileName}}">btnExportToCsvText</button></li>&nbsp
 
@@ -125,6 +114,3 @@
     </div>
 </div>
 <script src="~/Scripts/bootstrap/bootstrap-tooltip.js"></script>
-@*@{ Html.RenderPartial("_EditMultipleMachines.Modal"); }
-@{ Html.RenderPartial("_MachineDeleteHistory.Modal"); }
-@{ Html.RenderPartial("_VendingMachineAssignments.Modal");}*@

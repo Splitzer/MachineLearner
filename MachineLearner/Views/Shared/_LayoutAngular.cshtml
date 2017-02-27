@@ -201,7 +201,7 @@
     @Scripts.Render("~/bundles/app")
     @RenderSection("scripts", false)
     <script>
-        angular.module("PortalMVCApp").value('model', @JsonHelpers.ToJson(Model));
+        angular.module('DatasetVisualiser').value('model', @JsonHelpers.ToJson(Model)); //MachineLearner?
     </script>
 </body>
 </html>
