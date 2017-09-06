@@ -23,7 +23,7 @@ namespace MachineLearner
 
             if (!dbAccess.TableExists(fileName))
             {
-                dbAccess.CreateDatasetTable(table);
+                dbAccess.CreateDatabaseTable(table);
                 dbAccess.FillTable(table);
             }
         }

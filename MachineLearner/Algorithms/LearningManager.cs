@@ -1,84 +1,60 @@
-﻿namespace MachineLearner.Algorithms
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+
+namespace MachineLearner.Algorithms
 {
     public class LearningManager
     {
-        int N, d;
-        int maxValue, minValue, range;
-        float[] f;
-        float[][] n;
-        float[][] p, p2;
+        public int NumberOfExamples { get; set; }
+        public float MinimunDistance { get; set; }
+        public float Range { get; set; }
+        public float[] Frequencies { get; set; }
+        public float[] NumberOfAppearances { get; set; }
+        public float[][] Probabilities { get; set; }
+        public float[][] ProbabilitiesSqared { get; set; }
 
-        public LearningManager()
+        public LearningManager(DataTable rawData)
         {
-            InitialiseDataset();
+            float[][] X = DatasetBreakdown(rawData, out float[] Y);
+
+            NumberOfExamples = Y.Length;
+
+            float maxValue = X.Cast<float>().Max();
+            int lenghtOfTuple = X[0].Length;
+
+            for (int i = 0; i < maxValue; i++)
+            {
+                for (int k = 0; k < lenghtOfTuple; k++)
+                {
+
+                }
+            }
         }
 
-        private static void InitialiseDataset()
+        private float[][] DatasetBreakdown(DataTable rawData, out float[] Y)
         {
-            //int N = size(X,1);
-            //int d = size(X,2);
-            //int megtimi = max(max(X));
-            float[][] f;
-
-            //for (int i = 0; i < megtimi; i++)
-            //{
-                //    for k=1:d
-                //        f(i,k)=sum(X(:,k) == i);
-                //    end
-            //}
-
-            //for (int i = 0; i < d; i++)
-            //{
-                //    n(k)=size(find(f(:,k)~=0),1);
-            //}
-
-            //float p = f / N;
-            //float p2 = (f.*(f-1))./(N*(N-1));
-
-            int range=0;
-            int Xmin=0;
-            //func_inputs={n f  pp2 N range Xmin};
-            //[range,Xmin] = Normalise(X,func_names,func_inputs); %
-            //func_inputs={n f p p2 N range Xmin};
+            throw new NotImplementedException();
         }
 
-        private void Normalise()
+        private void Normalise(float[][] X)
         {
-            //function [range,Xmin] = DistNorm(X,func_names,func_inputs)
+            float[] firstTuple = X[1];
+            float[] distances = new float[100];
 
-            //N=func_inputs{1,5};
-            //shroom1=X(1,:);
+            for (int i = 0; i < NumberOfExamples; i++)
+            {
+                distances[i] = CalculateDistance(firstTuple, X[i]);
+            }
 
-            //for i=1:N
-            //    for F=1:14
-            //        Dist(i,F)=feval(func_names{F,1},shroom1,X(i,:),func_inputs);
-            //    end
-            //end
+            float maxDistance = distances.Max();
 
-            //Xmax=max(Dist);
-            //% Xmax=Dist(end,:);
-
-            //for F=1:14
-            //    tab=tabulate(Dist(:,F));
-            //    top=tab(:,1);
-    
-            //    if(top(end)==1e4)
-            //        Xmax(F)=top(end-1)*10;
-            //    else
-            //        Xmax(F)=top(end);
-            //    end
-
-            //end
-
-            //Xmin=min(Dist);
-            //% Xmin=Dist(1,:);
-
-            //range=Xmax-Xmin;
-
-            //end
+            MinimunDistance = distances.Min();
+            Range = maxDistance - MinimunDistance;
         }
 
-        public float[] LinearRegression(float[][] X, float[] Y)
+        private float[] LinearRegression(float[][] X, float[] Y)
         {
             float[] W;
 
@@ -87,12 +63,26 @@
             return W;
         }
 
-        private float CalculateDistance(float x, float y)
+        private float CalculateDistance(float[] tuple1, float[] tuple2)
         {
-            return 0;
+            int sum = 0;
+            float distance = 0;
+            int lenghtOfTuple = tuple1.Length;
+
+            for (int k = 0; k < lenghtOfTuple; k++)
+            {
+                if (tuple1[k] == tuple2[k])
+                {
+                    sum++;
+                }
+            }
+
+            distance = (sum / lenghtOfTuple) - 1;
+
+            return distance;
         }
 
-        private float[] Prediction(float[] Y, float[][] W, float[][] Z)
+        public float[] Prediction(float[] Y, float[][] weights, float[][] kernelWeights)
         {
             float[] Ypred;
 
@@ -101,89 +91,50 @@
             return Ypred;
         }
 
-        private void RBFCompute()
+        public float[][] KernelWeightCompute(float[][] X, float[][] kernels)
         {
-            //function [W,Zval,L] = RBFcompute(Xtrain,Xval,Y,distfactor,func_names,func_inputs,F)
+            int numberOfCenters= kernels[0].Length;
+            float[][] kernelWeights = new float[numberOfCenters][];
 
-            //Ntrain=size(Xtrain,1);
-            //Nval=size(Xval,1);
-            //kernels=Xtrain(1,:);
+            for (int i = 0; i < NumberOfExamples; i++)
+            {
+                for (int l = 0; l < numberOfCenters; l++)
+                {
+                    //kernelWeights[i,l] = CalculateDistance(X[i], kernels[l]);
+                }
+            }
 
-            //%% RBFs compute
-
-            //for i=2:Ntrain
-            //    for l=1:size(kernels,1)
-            //        D(l)=feval(func_names{F,1},Xtrain(i,:),kernels(l,:),func_inputs);
-            //    end
-            //    if min(D) > distfactor
-            //       kernels=cat(1,kernels,Xtrain(i,:));
-            //    end
-            //end
-
-            //% for i=2:N
-            //%     l=1;
-            //%     D=0;
-            //%     
-            //%      while l <= size(kernels,1) && D < distfactor
-            //%         D=feval(func_names{F,1},Xtrain(i,:),kernels(l,:),func_inputs);
-            //%         l=l+1;
-            //%      end
-            //%      if D >= distfactor
-            //%             kernels = cat(1,kernels,Xtrain(i,:));
-            //%             break;
-            //%      end
-            //% end
-
-            //%% Training Z and W compute
-
-            //L=size(kernels,1);
-            //Z=zeros(Ntrain,L);
-            //func_inputs{1,6}=0;
-
-            //for i=1:Ntrain
-            //    for l=1:L
-            //        Z(i,l)=feval(func_names{F,1},Xtrain(i,:),kernels(l,:),func_inputs);
-            //    end    
-            //end
-
-            //Z=(Z.^2).*log10(Z+1);
-            //Z=[Z ones(Ntrain,1)];
-            //W=((Z'*Z)^-1)*Z'*Y;
-
-            //%% Validation Z compute
-
-            //Zval=zeros(Nval,L);
-
-            //for i=1:Nval
-            //    for l=1:L
-            //        Zval(i,l)=feval(func_names{F,1},Xval(i,:),kernels(l,:),func_inputs);
-            //    end
-            //end
-
-            //Zval=(Zval.^2).*log10(Zval+1);
-            //Zval=[Zval ones(Nval,1)];
-
-            //end
+            return kernelWeights;
         }
 
-        //       for distfactor=index
-//           iter=iter+1
-//           for F=Findex
-//               [W,Zval,L(iter,F)] = RBFcompute(Xtrain,Xval,Ytrainconv,distfactor,func_names,func_inputs,F);
-//               [Accval(iter,F)] = Prediction(Yvalconv,W,Zval)        
-//       %         ErrorVal(iter,:) = PredictionIndiv(Yvalconv,W,Zval)
-//               iter
-//           end
-//       end
+        public void KernelCompute(float[][] X, float[][] kernels, float threshold)
+        {
+            float[] D = new float[100];
+            int lenghtOfKernels = kernels[0].Length;
 
-//       %%
-//       Acctest=zeros(size(Findex,2),1);
-//       Ltst=zeros(size(Findex,2),1);
-//       for F=Findex
-//           optimaldist(F) = OptDist(Accval(:,F),index);
-//           [W,Ztest,Ltst(F)] = RBFcompute(Xtrain,Xtest,Ytrainconv,optimaldist,func_names,func_inputs,F);
-//           [Acctest(F)] = Prediction(Ytestconv,W,Ztest)
-//       %     ErrorTest = PredictionIndiv(Ytestconv,W,Ztest)
-//       end
+            for (int i = 1; i < NumberOfExamples; i++)
+            {
+                for (int l = 0; l < lenghtOfKernels; l++)
+                {
+                    D[l] = CalculateDistance(X[i], kernels[l]);
+                }
+
+                if (D.Min() > threshold)
+                {
+                    kernels = ConcatenateArrays(kernels, X[i]);
+                }
+
+                lenghtOfKernels = kernels[0].Length;
+            }
+        }
+
+        private float[][] ConcatenateArrays(float[][] twoDimentionalArray, float[] array)
+        {
+            var point = new int[array.Length + twoDimentionalArray[0].Length];
+            array.CopyTo(point, 0);
+            twoDimentionalArray.CopyTo(point, array.Length);
+
+            return twoDimentionalArray;
+        }
     }
 }

@@ -52,7 +52,7 @@ namespace MachineLearner.DB
             return table;
         }
 
-        internal void CreateDatasetTable(DataTable table, bool hasColumnNames = false)
+        internal void CreateDatabaseTable(DataTable table, bool hasColumnNames = false)
         {
             if (connection.State.ToString() == "Closed") connection.Open();
 
