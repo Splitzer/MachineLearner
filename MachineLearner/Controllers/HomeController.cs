@@ -12,10 +12,12 @@ namespace MachineLearner.Controllers
         public ActionResult Index()
         {
             ExcelImporter importer = new ExcelImporter();
-            importer.ImportDataFromExcel(@"C:\_Dev\Zoo Data.xlsx");
+            //importer.ImportDataFromExcel(@"C:\_Dev\Zoo Data.xlsx");
+            importer.ImportDataFromExcel(@"C:\Users\ng1e16\Downloads\Zoo Data.xlsx");
 
-            var zooData = access.GetDataset("Zoo");
-            manager = new LearningManager(zooData);
+            access = new DB_Access();
+            var zooData = access.GetDataset("ZooData");
+            //manager = new LearningManager(zooData);
 
             return View();
         }

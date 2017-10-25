@@ -11,7 +11,10 @@ namespace MachineLearner.DB
 
         public DB_Access()
         {
-            connection = DB_Connection.GetConnection();
+            if (connection == null)
+            {
+                connection = DB_Connection.GetConnection();
+            }
         }
 
         internal bool TableExists(string tableName)
@@ -43,7 +46,7 @@ namespace MachineLearner.DB
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = connection;
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT * FROM" + tableName;
+            cmd.CommandText = "SELECT * FROM " + tableName;
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(table);

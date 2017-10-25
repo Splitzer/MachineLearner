@@ -17,7 +17,8 @@ namespace MachineLearner.Algorithms
 
         public LearningManager(DataTable rawData)
         {
-            float[][] X = DatasetBreakdown(rawData, out float[] Y);
+            float[] Y;
+            float[][] X = DatasetBreakdown(rawData, out Y);
 
             NumberOfExamples = Y.Length;
 
